@@ -1,2 +1,2 @@
 # ComputerVision
-计算机视觉
+基于JAX的计算机视觉算法模型库

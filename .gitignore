@@ -3,3 +3,4 @@ __pycache__
 /outputs/
 /models/
 !/models/README.md
+jax_intro.ipynb
