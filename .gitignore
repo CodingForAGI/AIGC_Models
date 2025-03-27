@@ -1,5 +1,3 @@
 .idea
 __pycache__
 /outputs/
-/models/
-!/models/README.md
