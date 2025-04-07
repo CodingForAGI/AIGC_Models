@@ -1,44 +1,64 @@
+import torch
+import os
+
 from torch.utils.data import Dataset
 from torchvision import datasets
-from torchvision.transforms import ToTensor
-import os
+from torchvision.transforms import Compose, ToTensor, Normalize
 from src.data import DATASET_ROOT
 
-
-def load_fashion_mnist():
+def load_fashion_mnist(transform):
     root = os.path.join(DATASET_ROOT, "fashion_mnist")
     train_data = datasets.FashionMNIST(
-        root=root, train=True, download=True, transform=ToTensor()
+        root=root, train=True, download=True, transform=transform
     )
 
     test_data = datasets.FashionMNIST(
-        root=root, train=False, download=True, transform=ToTensor()
+        root=root, train=False, download=True, transform=transform
     )
 
     return train_data, test_data
 
 
-def load_cifar10():
+def load_cifar10(transform):
     root = os.path.join(DATASET_ROOT, "cifar10")
     train_data = datasets.CIFAR10(
-        root=root, train=True, download=True, transform=ToTensor()
+        root=root, train=True, download=True, transform=transform
     )
 
     test_data = datasets.CIFAR10(
-        root=root, train=False, download=True, transform=ToTensor()
+        root=root, train=False, download=True, transform=transform
     )
 
     return train_data, test_data
 
 
-def load_cifar100():
+def load_cifar100(transform):
     root = os.path.join(DATASET_ROOT, "cifar100")
     train_data = datasets.CIFAR100(
-        root=root, train=True, download=True, transform=ToTensor()
+        root=root, train=True, download=True, transform=transform
     )
 
     test_data = datasets.CIFAR100(
-        root=root, train=False, download=True, transform=ToTensor()
+        root=root, train=False, download=True, transform=transform
     )
 
     return train_data, test_data
+
+DATSET_LOADER = {
+    "fashion_mnist": load_fashion_mnist,
+    "cifar10": load_cifar10,
+    "cifar100": load_cifar100,
+}
+
+
+def create_image_classification_dataloader(dataset_name, batch_size, is_train=False):
+    shuffle = True if is_train else False
+    transform = Compose(
+        [ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))] 
+    )
+    dataset = DATSET_LOADER[dataset_name](transform)
+    dataloader = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, shuffle=shuffle
+    )
+
+    return dataloader
