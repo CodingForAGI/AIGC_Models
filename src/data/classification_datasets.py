@@ -3,7 +3,7 @@ import os
 
 from torch.utils.data import Dataset
 from torchvision import datasets
-from torchvision.transforms import Compose, ToTensor, Normalize
+from torchvision.transforms import Compose, ToTensor, Normalize, Resize
 from src.utils import get_dataset_root
 
 DATASET_ROOT = get_dataset_root()
@@ -56,9 +56,12 @@ DATSET_LOADER = {
 def create_image_classification_dataloader(dataset_name, batch_size, is_train=False):
     shuffle = True if is_train else False
     transform = Compose(
-        [ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))] 
+        [Resize((224, 224)), ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))] 
     )
-    dataset = DATSET_LOADER[dataset_name](transform)
+    if is_train:
+        dataset = DATSET_LOADER[dataset_name](transform)[0]
+    else:
+        dataset = DATSET_LOADER[dataset_name](transform)[1]
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=shuffle
     )

@@ -21,6 +21,6 @@ def train(model, train_loader, criterion, optimizer, num_epochs, num_loss_print,
 
             running_loss += loss.item()
             if i % num_loss_print == (num_loss_print - 1):
-                print(f"Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, loss: {running_loss / num_loss_print:.6f}]")
+                print(f"Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, loss: {running_loss / num_loss_print:.6f}")
                 running_loss = 0.0
     
