@@ -4,7 +4,9 @@ import os
 from torch.utils.data import Dataset
 from torchvision import datasets
 from torchvision.transforms import Compose, ToTensor, Normalize
-from src.data import DATASET_ROOT
+from src.utils import get_dataset_root
+
+DATASET_ROOT = get_dataset_root()
 
 def load_fashion_mnist(transform):
     root = os.path.join(DATASET_ROOT, "fashion_mnist")
