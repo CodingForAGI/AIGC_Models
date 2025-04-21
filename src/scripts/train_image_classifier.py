@@ -1,12 +1,14 @@
 import torch
 
+from experiments.alexnet_cfg import AlexNetCfg
 from src.data import create_image_classification_dataloader
 from src.models.cnn_models import AlexNet
 from src.trainer import train
 from src.utils import get_device
 
 
-def train_alexnet_on_cifar10():
+def train_alexnet_on_cifar10(args):
+    cfg = AlexNetCfg(args)
     device = get_device()
     model = AlexNet(num_classes=10).to(device)
     train_dataloader = create_image_classification_dataloader(
