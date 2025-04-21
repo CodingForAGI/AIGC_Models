@@ -12,22 +12,21 @@ def train_alexnet_on_cifar10(args):
     device = get_device()
     model = AlexNet(num_classes=10).to(device)
     train_dataloader = create_image_classification_dataloader(
-        dataset_name="cifar10", batch_size=64, is_train=True
+        dataset_name=cfg.dataset_name, batch_size=cfg.batch_size, is_train=True
     )
     test_dataloader = create_image_classification_dataloader(
-        dataset_name="cifar10", batch_size=64, is_train=False
+        dataset_name=cfg.dataset_name, batch_size=cfg.batch_size, is_train=False
     )
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    num_epochs = 50
+    optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=0.9)
 
     train(
         model=model,
         train_loader=train_dataloader,
         criterion=criterion,
         optimizer=optimizer,
-        num_epochs=num_epochs,
+        num_epochs=cfg.epochs,
         num_loss_print=50,
         device=device,
     )

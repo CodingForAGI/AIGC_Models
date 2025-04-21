@@ -3,7 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 
 
-def train(model, train_loader, criterion, optimizer, num_epochs, num_loss_print, device):
+def train(
+    model, train_loader, criterion, optimizer, num_epochs, num_loss_print, device
+):
     model.train()
     num_batches = len(train_loader)
 
@@ -21,6 +23,7 @@ def train(model, train_loader, criterion, optimizer, num_epochs, num_loss_print,
 
             running_loss += loss.item()
             if i % num_loss_print == (num_loss_print - 1):
-                print(f"Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, loss: {running_loss / num_loss_print:.6f}")
+                print(
+                    f"Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, loss: {running_loss / num_loss_print:.6f}"
+                )
                 running_loss = 0.0
-    
