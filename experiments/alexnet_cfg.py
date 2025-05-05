@@ -14,6 +14,9 @@ class AlexNetCfg:
         # dataset
         self.dataset_name = "cifar10"
 
+        # save model
+        self.save_interval = 10
+
         self.repo_root = get_repo_root()
     
     def __call__(self, cmdline_cfg=None):
