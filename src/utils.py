@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import torch
+from datetime import datetime
 
 def get_repo_root():
     cur_file = os.path.dirname(os.path.abspath(__file__))
@@ -29,6 +30,14 @@ def load_yaml_config(file_path):
         sys.exit(1)
     return None
 
+def save_to_yaml(data, file_path):
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
+    except Exception as e:
+        print(f"Error saving to YAML file: {e}")
+        sys.exit(1)
+
 def get_dataset_root():
     repo_root = get_repo_root()
     print(f"Repo root: {repo_root}")
@@ -38,3 +47,8 @@ def get_dataset_root():
     print(f"Dataset root: {dataset_root}")
 
     return dataset_root
+
+def get_format_time():
+    now = datetime.now()
+    formatted_time = now.strftime("%Y-%m-%d-%H-%M-%S")
+    return formatted_time

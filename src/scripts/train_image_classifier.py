@@ -8,7 +8,7 @@ from src.utils import get_device
 
 
 def train_alexnet_on_cifar10(args):
-    cfg = AlexNetCfg(args)
+    cfg = AlexNetCfg().__call__(cmdline_cfg=args)
     device = get_device()
     model = AlexNet(num_classes=10).to(device)
     train_dataloader = create_image_classification_dataloader(
