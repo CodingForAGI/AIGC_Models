@@ -1,11 +1,23 @@
 import torch
 import torch.nn as nn
 import os
+import logging
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 
 from src.metric import Metric
+from src.utils import get_log_file_path
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(get_log_file_path()),  # write log to file
+        logging.StreamHandler(),  # print log to console
+    ],
+)
+logger = logging.getLogger(__name__)
 
 
 class MeanAccumulator:
@@ -75,7 +87,7 @@ def train(
                     ),  # Assuming to_string returns a dictionary
                 }
             )
-        print(
+        logger.info(
             f"Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, loss: {avg_loss:.6f}, {metric.to_string()}"
         )
         batch_iter.close()

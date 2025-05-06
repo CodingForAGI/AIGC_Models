@@ -45,10 +45,12 @@ def parse_project_cfg():
     print("Load project_cfg.yaml successfully.")
     dataset_root = os.path.join(repo_root, yaml_data["DATASET"]["ROOT"])
     model_save_root = os.path.join(repo_root, yaml_data["MODEL"]["SAVE_DIR"])
+    log_root = os.path.join(repo_root, yaml_data["LOG"]["ROOT"])
 
     return {
         "dataset_root": dataset_root,
         "model_save_root": model_save_root,
+        "log_root": log_root,
     }
 
 PROJECT_CFG = parse_project_cfg()
@@ -57,3 +59,10 @@ def get_format_time():
     now = datetime.now()
     formatted_time = now.strftime("%Y-%m-%d-%H-%M-%S")
     return formatted_time
+
+def get_log_file_path():
+    log_root = PROJECT_CFG["log_root"]
+    current_time = get_format_time()
+    log_file_path = os.path.join(log_root, f"train_{current_time}.log")
+    print(f"Save training log to: {log_file_path}")
+    return log_file_path

@@ -2,3 +2,5 @@ DATASET:
   ROOT: "datasets"
 MODEL:
   SAVE_DIR: "output"
+LOG:
+  ROOT: "log"
