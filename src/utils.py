@@ -38,15 +38,20 @@ def save_to_yaml(data, file_path):
         print(f"Error saving to YAML file: {e}")
         sys.exit(1)
 
-def get_dataset_root():
+def parse_project_cfg():
     repo_root = get_repo_root()
     print(f"Repo root: {repo_root}")
     yaml_data = load_yaml_config(file_path="project_cfg.yaml")
     print("Load project_cfg.yaml successfully.")
     dataset_root = os.path.join(repo_root, yaml_data["DATASET"]["ROOT"])
-    print(f"Dataset root: {dataset_root}")
+    model_save_root = os.path.join(repo_root, yaml_data["MODEL"]["SAVE_DIR"])
 
-    return dataset_root
+    return {
+        "dataset_root": dataset_root,
+        "model_save_root": model_save_root,
+    }
+
+PROJECT_CFG = parse_project_cfg()
 
 def get_format_time():
     now = datetime.now()

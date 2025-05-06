@@ -5,7 +5,7 @@ from experiments.alexnet_cfg import AlexNetCfg
 from src.data import create_image_classification_dataloader
 from src.models.cnn_models import AlexNet
 from src.trainer import train
-from src.utils import get_device, get_repo_root
+from src.utils import get_device, get_repo_root, PROJECT_CFG
 
 
 def train_alexnet_on_cifar10(args):
@@ -23,7 +23,7 @@ def train_alexnet_on_cifar10(args):
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=0.9)
 
-    save_model_path = os.path.join(repo_root, "output")
+    save_model_path = PROJECT_CFG["model_save_root"]
 
     train(
         model=model,

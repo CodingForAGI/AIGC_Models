@@ -4,12 +4,10 @@ import os
 from torch.utils.data import Dataset
 from torchvision import datasets
 from torchvision.transforms import Compose, ToTensor, Normalize, Resize
-from src.utils import get_dataset_root
-
-DATASET_ROOT = get_dataset_root()
+from src.utils import PROJECT_CFG
 
 def load_fashion_mnist(transform):
-    root = os.path.join(DATASET_ROOT, "fashion_mnist")
+    root = os.path.join(PROJECT_CFG["dataset_root"], "fashion_mnist")
     train_data = datasets.FashionMNIST(
         root=root, train=True, download=True, transform=transform
     )
@@ -22,7 +20,7 @@ def load_fashion_mnist(transform):
 
 
 def load_cifar10(transform):
-    root = os.path.join(DATASET_ROOT, "cifar10")
+    root = os.path.join(PROJECT_CFG["dataset_root"], "cifar10")
     train_data = datasets.CIFAR10(
         root=root, train=True, download=True, transform=transform
     )
@@ -35,7 +33,7 @@ def load_cifar10(transform):
 
 
 def load_cifar100(transform):
-    root = os.path.join(DATASET_ROOT, "cifar100")
+    root = os.path.join(PROJECT_CFG["dataset_root"], "cifar100")
     train_data = datasets.CIFAR100(
         root=root, train=True, download=True, transform=transform
     )

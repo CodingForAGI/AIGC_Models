@@ -1,2 +1,4 @@
 DATASET:
   ROOT: "datasets"
+MODEL:
+  SAVE_DIR: "output"
