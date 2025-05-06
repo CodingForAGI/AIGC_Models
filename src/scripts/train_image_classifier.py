@@ -3,6 +3,7 @@ import os
 
 from experiments.alexnet_cfg import AlexNetCfg
 from src.data import create_image_classification_dataloader
+from src.metric import ImageClassificationMetric
 from src.models.cnn_models import AlexNet
 from src.trainer import train
 from src.utils import get_device, get_repo_root, PROJECT_CFG
@@ -12,7 +13,7 @@ def train_alexnet_on_cifar10(args):
     repo_root = get_repo_root()
     cfg = AlexNetCfg().__call__(cmdline_cfg=args)
     device = get_device()
-    model = AlexNet(num_classes=10).to(device)
+    model = AlexNet(num_classes=cfg.num_classes).to(device)
     train_dataloader = create_image_classification_dataloader(
         dataset_name=cfg.dataset_name, batch_size=cfg.batch_size, is_train=True
     )
@@ -25,11 +26,14 @@ def train_alexnet_on_cifar10(args):
 
     save_model_path = PROJECT_CFG["model_save_root"]
 
+    image_classification_metric = ImageClassificationMetric(num_classes=cfg.num_classes, device=device)
+
     train(
         model=model,
         train_loader=train_dataloader,
         criterion=criterion,
         optimizer=optimizer,
+        metric=image_classification_metric,
         num_epochs=cfg.epochs,
         save_interval=cfg.save_interval,
         save_dir=save_model_path,

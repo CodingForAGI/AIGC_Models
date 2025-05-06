@@ -6,7 +6,7 @@ from src.utils import get_format_time, get_repo_root, load_yaml_config, save_to_
 class AlexNetCfg:
     def __init__(self):
         # default config params
-        self.num_classes = 1000
+        self.num_classes = 10
         self.batch_size = 128
         self.epochs = 100
         self.lr = 0.001
