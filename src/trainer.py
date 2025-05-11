@@ -40,6 +40,7 @@ class MeanAccumulator:
 def train(
     model: nn.Module,
     train_loader: DataLoader,
+    test_loader: DataLoader,
     criterion: nn.Module,
     optimizer: Optimizer,
     metric: Metric,
@@ -52,6 +53,8 @@ def train(
     num_batches = len(train_loader)
     min_loss = float("inf")
     train_loss = MeanAccumulator()
+    if test_loader is not None:
+        test_loss = MeanAccumulator()
 
     for epoch in range(num_epochs):
         train_loss.reset()
@@ -88,9 +91,32 @@ def train(
                 }
             )
         logger.info(
-            f"Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, loss: {avg_loss:.6f}, {metric.to_string()}"
+            f"[TRAIN] Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, train_loss: {avg_loss:.6f}, {metric.to_string()}"
         )
         batch_iter.close()
+
+        # evaluate model on validation set
+        if test_loader is not None:
+            model.eval()
+            test_loss.reset()
+            metric.reset()
+            with torch.no_grad():
+                for i, data in enumerate(test_loader, 0):
+                    test_inputs, test_labels = data
+                    test_inputs, test_labels = test_inputs.to(device), test_labels.to(
+                        device
+                    )
+
+                    test_outputs = model(test_inputs)
+                    test_calc_loss = criterion(test_outputs, test_labels)
+                    test_loss.update(test_calc_loss.item(), test_inputs.size(0))
+                    test_avg_loss = test_loss.mean()
+
+                    metric.update(test_outputs, test_labels)
+                    metric.compute()
+            logger.info(
+                f"[EVALUATE] Epoch: {epoch + 1} / {num_epochs}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}"
+            )
 
         # save model every save_interval epochs
         if (epoch + 1) % save_interval == 0:

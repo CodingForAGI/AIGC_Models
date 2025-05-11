@@ -31,6 +31,7 @@ def train_alexnet_on_cifar10(args):
     train(
         model=model,
         train_loader=train_dataloader,
+        test_loader=test_dataloader,
         criterion=criterion,
         optimizer=optimizer,
         metric=image_classification_metric,
