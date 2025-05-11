@@ -95,13 +95,21 @@ def train(
         )
         batch_iter.close()
 
-        # evaluate model on validation set
+        # evaluate the model on validation set
         if test_loader is not None:
             model.eval()
             test_loss.reset()
             metric.reset()
+            num_test_batches = len(test_loader)
+            test_batch_iter = tqdm(
+                enumerate(test_loader, 0),
+                desc=f"Validation Epoch {epoch + 1}/{num_epochs}",
+                total=num_test_batches,
+                unit="batch",
+                leave=True,
+            )
             with torch.no_grad():
-                for i, data in enumerate(test_loader, 0):
+                for i, data in test_batch_iter:
                     test_inputs, test_labels = data
                     test_inputs, test_labels = test_inputs.to(device), test_labels.to(
                         device
@@ -114,8 +122,19 @@ def train(
 
                     metric.update(test_outputs, test_labels)
                     metric.compute()
+
+                    # update progress bar with test loss and metric
+                    test_batch_iter.set_postfix(
+                        {
+                            "test_loss": f"{test_avg_loss:.6f}",
+                            **metric.to_string(
+                                key_value_fromat=True
+                            ),  # Assuming to_string returns a dictionary
+                        }
+                    )
+            test_batch_iter.close()
             logger.info(
-                f"[EVALUATE] Epoch: {epoch + 1} / {num_epochs}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}"
+                f"[VALIDATE] Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_test_batches}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}"
             )
 
         # save model every save_interval epochs

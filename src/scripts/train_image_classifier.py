@@ -6,11 +6,10 @@ from src.data import create_image_classification_dataloader
 from src.metric import ImageClassificationMetric
 from src.models.cnn_models import AlexNet
 from src.trainer import train
-from src.utils import get_device, get_repo_root, PROJECT_CFG
+from src.utils import get_device, PROJECT_CFG
 
 
 def train_alexnet_on_cifar10(args):
-    repo_root = get_repo_root()
     cfg = AlexNetCfg().__call__(cmdline_cfg=args)
     device = get_device()
     model = AlexNet(num_classes=cfg.num_classes).to(device)
