@@ -28,6 +28,7 @@ def train_alexnet_on_cifar10(args):
     image_classification_metric = ImageClassificationMetric(num_classes=cfg.num_classes, device=device)
 
     train(
+        task_name="alexnet_cifar10",
         model=model,
         train_loader=train_dataloader,
         test_loader=test_dataloader,

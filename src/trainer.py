@@ -9,15 +9,19 @@ from torch.optim import Optimizer
 from src.metric import Metric
 from src.utils import get_log_file_path
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(get_log_file_path()),  # write log to file
-        logging.StreamHandler(),  # print log to console
-    ],
-)
-logger = logging.getLogger(__name__)
+
+def get_logger(task_name):
+    if not logging.getLogger().handlers:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[
+                logging.FileHandler(get_log_file_path(task_name)),  # write log to file
+                logging.StreamHandler(),  # print log to console
+            ],
+        )
+    logger = logging.getLogger(__name__)
+    return logger
 
 
 class MeanAccumulator:
@@ -38,6 +42,7 @@ class MeanAccumulator:
 
 
 def train(
+    task_name: str,
     model: nn.Module,
     train_loader: DataLoader,
     test_loader: DataLoader,
@@ -49,6 +54,9 @@ def train(
     save_dir: str,
     device: torch.device,
 ):
+    # logger configuration
+    logger = get_logger(task_name=task_name)
+
     model.train()
     num_batches = len(train_loader)
     min_loss = float("inf")

@@ -60,9 +60,9 @@ def get_format_time():
     formatted_time = now.strftime("%Y-%m-%d-%H-%M-%S")
     return formatted_time
 
-def get_log_file_path():
+def get_log_file_path(task_name):
     log_root = PROJECT_CFG["log_root"]
     current_time = get_format_time()
-    log_file_path = os.path.join(log_root, f"train_{current_time}.log")
+    log_file_path = os.path.join(log_root, f"{task_name}_{current_time}.log")
     print(f"Save training log to: {log_file_path}")
     return log_file_path
