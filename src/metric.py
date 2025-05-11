@@ -27,10 +27,10 @@ class ImageClassificationMetric(Metric):
             "recall": 0.0,
             "f1_score": 0.0,
         }
-        self.accuracy = Accuracy(task="multiclass", num_classes=num_classes).to(device)
-        self.precision = Precision(task="multiclass", num_classes=num_classes).to(device)
-        self.recall = Recall(task="multiclass", num_classes=num_classes).to(device)
-        self.f1_score = F1Score(task="multiclass", num_classes=num_classes).to(device)
+        self.accuracy = Accuracy(task="multiclass", num_classes=num_classes, average='macro').to(device)
+        self.precision = Precision(task="multiclass", num_classes=num_classes, average='macro').to(device)
+        self.recall = Recall(task="multiclass", num_classes=num_classes, average='macro').to(device)
+        self.f1_score = F1Score(task="multiclass", num_classes=num_classes, average='macro').to(device)
     
     def reset(self):
         self.accuracy.reset()
