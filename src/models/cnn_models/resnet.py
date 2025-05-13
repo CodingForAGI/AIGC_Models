@@ -4,6 +4,10 @@ import torch.nn.functional as F
 
 
 class BasicBlock(nn.Module):
+    """
+    paper: Deep Residual Learning for Image Recognition
+    url: https://arxiv.org/abs/1512.03385
+    """
     expansion = 1
 
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
