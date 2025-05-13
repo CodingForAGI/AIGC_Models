@@ -57,7 +57,6 @@ def train(
     # logger configuration
     logger = get_logger(task_name=task_name)
 
-    model.train()
     num_batches = len(train_loader)
     min_loss = float("inf")
     train_loss = MeanAccumulator()
@@ -65,6 +64,7 @@ def train(
         test_loss = MeanAccumulator()
 
     for epoch in range(num_epochs):
+        model.train()
         train_loss.reset()
         metric.reset()
         batch_iter = tqdm(
@@ -175,3 +175,42 @@ def train(
                 best_model_path,
             )
             print(f"Best model updated and saved to {best_model_path}")
+
+
+def evaluate(
+    test_loader: DataLoader, model: nn.Module, metric: Metric, device: torch.device
+):
+    model.eval()
+    test_loss = MeanAccumulator()
+    test_loss.reset()
+    metric.reset()
+    num_test_batches = len(test_loader)
+    test_batch_iter = tqdm(
+        enumerate(test_loader, 0),
+        desc="Evaluate",
+        total=num_test_batches,
+        unit="batch",
+        leave=True,
+    )
+    with torch.no_grad():
+        for i, data in test_batch_iter:
+            test_inputs, test_labels = data
+            test_inputs, test_labels = test_inputs.to(device), test_labels.to(device)
+
+            test_outputs = model(test_inputs)
+
+            metric.update(test_outputs, test_labels)
+            metric.compute()
+
+            # update progress bar with test loss and metric
+            test_batch_iter.set_postfix(
+                {
+                    **metric.to_string(
+                        key_value_fromat=True
+                    ),  # Assuming to_string returns a dictionary
+                }
+            )
+    test_batch_iter.close()
+    print(
+        f"[EVALUATE] iter: {i + 1} / {num_test_batches}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}"
+    )
