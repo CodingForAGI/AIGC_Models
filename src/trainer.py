@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 
 from src.metric import Metric
-from src.utils import get_log_file_path
+from src.utils import get_log_file_path, save_training_status
 
 
 def get_logger(task_name):
@@ -62,6 +62,7 @@ def train(
     train_loss = MeanAccumulator()
     if test_loader is not None:
         test_loss = MeanAccumulator()
+        test_avg_loss = 0
 
     for epoch in range(num_epochs):
         model.train()
@@ -93,9 +94,7 @@ def train(
             batch_iter.set_postfix(
                 {
                     "loss": f"{avg_loss:.6f}",
-                    **metric.to_string(
-                        key_value_fromat=True
-                    ),  # Assuming to_string returns a dictionary
+                    **metric.to_string(key_value_fromat=True),  # Assuming to_string returns a dictionary
                 }
             )
         logger.info(
@@ -119,9 +118,7 @@ def train(
             with torch.no_grad():
                 for i, data in test_batch_iter:
                     test_inputs, test_labels = data
-                    test_inputs, test_labels = test_inputs.to(device), test_labels.to(
-                        device
-                    )
+                    test_inputs, test_labels = test_inputs.to(device), test_labels.to(device)
 
                     test_outputs = model(test_inputs)
                     test_calc_loss = criterion(test_outputs, test_labels)
@@ -135,9 +132,7 @@ def train(
                     test_batch_iter.set_postfix(
                         {
                             "test_loss": f"{test_avg_loss:.6f}",
-                            **metric.to_string(
-                                key_value_fromat=True
-                            ),  # Assuming to_string returns a dictionary
+                            **metric.to_string(key_value_fromat=True),  # Assuming to_string returns a dictionary
                         }
                     )
             test_batch_iter.close()
@@ -147,42 +142,23 @@ def train(
 
         # save model every save_interval epochs
         if (epoch + 1) % save_interval == 0:
-            checkpoint_path = os.path.join(
-                save_dir, f"checkpoint_epoch_{epoch + 1}.pth"
-            )
-            torch.save(
-                {
-                    "epoch": epoch + 1,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "loss": avg_loss,
-                },
-                checkpoint_path,
-            )
+            checkpoint_path = os.path.join(save_dir, f"checkpoint_epoch_{epoch + 1}.pth")
+            save_training_status(epoch + 1, model, optimizer, avg_loss, checkpoint_path)
             print(f"Model saved to {checkpoint_path}")
 
         # save model with the lowest loss
         if avg_loss < min_loss:
             min_loss = avg_loss
             best_model_path = os.path.join(save_dir, "best_model.pth")
-            torch.save(
-                {
-                    "epoch": epoch + 1,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "loss": avg_loss,
-                },
-                best_model_path,
-            )
+            save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
             print(f"Best model updated and saved to {best_model_path}")
 
 
-def evaluate(
-    test_loader: DataLoader, model: nn.Module, metric: Metric, device: torch.device
-):
+def evaluate(test_loader: DataLoader, model: nn.Module, metric: Metric, device: torch.device):
     model.eval()
     test_loss = MeanAccumulator()
     test_loss.reset()
+    test_avg_loss = 0
     metric.reset()
     num_test_batches = len(test_loader)
     test_batch_iter = tqdm(
@@ -199,18 +175,15 @@ def evaluate(
 
             test_outputs = model(test_inputs)
 
+            test_avg_loss = test_loss.mean()
             metric.update(test_outputs, test_labels)
             metric.compute()
 
             # update progress bar with test loss and metric
             test_batch_iter.set_postfix(
                 {
-                    **metric.to_string(
-                        key_value_fromat=True
-                    ),  # Assuming to_string returns a dictionary
+                    **metric.to_string(key_value_fromat=True),  # Assuming to_string returns a dictionary
                 }
             )
     test_batch_iter.close()
-    print(
-        f"[EVALUATE] iter: {i + 1} / {num_test_batches}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}"
-    )
+    print(f"[EVALUATE] iter: {i + 1} / {num_test_batches}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}")
