@@ -20,13 +20,13 @@ def train_alexnet_on_cifar10(args):
         dataset_name=cfg.dataset_name, batch_size=cfg.batch_size, is_train=False
     )
 
-    image_classification_metric = ImageClassificationMetric(num_classes=cfg.num_classes, device=device)
+    image_classification_metric = ImageClassificationMetric(num_classes=cfg.num_classes, eval_metric="accuracy", device=device)
 
     if args.mode == "train":
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=0.9)
         save_model_path = PROJECT_CFG["model_save_root"]
-        
+
         train(
             task_name="alexnet_cifar10",
             model=model,
@@ -38,6 +38,7 @@ def train_alexnet_on_cifar10(args):
             num_epochs=cfg.epochs,
             save_interval=cfg.save_interval,
             save_dir=save_model_path,
+            save_by_metric_max_value=True,
             device=device,
         )
     elif args.mode == "eval":

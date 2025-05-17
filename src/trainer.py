@@ -52,17 +52,22 @@ def train(
     num_epochs: int,
     save_interval: int,
     save_dir: str,
+    save_by_metric_max_value: bool,
     device: torch.device,
 ):
     # logger configuration
     logger = get_logger(task_name=task_name)
 
     num_batches = len(train_loader)
-    min_loss = float("inf")
     train_loss = MeanAccumulator()
     if test_loader is not None:
         test_loss = MeanAccumulator()
         test_avg_loss = 0
+
+    if save_by_metric_max_value:
+        save_metric = float("-inf")
+    else:
+        save_metric = float("inf")
 
     for epoch in range(num_epochs):
         model.train()
@@ -146,12 +151,21 @@ def train(
             save_training_status(epoch + 1, model, optimizer, avg_loss, checkpoint_path)
             print(f"Model saved to {checkpoint_path}")
 
-        # save model with the lowest loss
-        if avg_loss < min_loss:
-            min_loss = avg_loss
-            best_model_path = os.path.join(save_dir, "best_model.pth")
-            save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
-            print(f"Best model updated and saved to {best_model_path}")
+        # save model with best metric value
+        if save_by_metric_max_value:
+            # when metric is higher, save the model
+            if metric.save_model_metric() > save_metric:
+                save_metric = metric.save_model_metric()
+                best_model_path = os.path.join(save_dir, "best_model.pth")
+                save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
+                print(f"Best model updated and saved to {best_model_path} when metric is {save_metric}")
+        else:
+            # when metric is lower, save the model
+            if metric.save_model_metric() < save_metric:
+                save_metric = metric.save_model_metric()
+                best_model_path = os.path.join(save_dir, "best_model.pth")
+                save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
+                print(f"Best model updated and saved to {best_model_path} when metric is {save_metric}")
 
 
 def evaluate(test_loader: DataLoader, model: nn.Module, metric: Metric, device: torch.device):
