@@ -9,7 +9,7 @@ from src.trainer import evaluate, train
 from src.utils import get_device, PROJECT_CFG, load_weights_from_training_status
 
 
-def train_alexnet_on_cifar10(args):
+def image_classification_train_pipeline(args):
     cfg = AlexNetCfg().__call__(cmdline_cfg=args)
     device = get_device()
     model = AlexNet(num_classes=cfg.num_classes).to(device)

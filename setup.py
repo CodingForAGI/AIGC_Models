@@ -1,5 +1,5 @@
 import argparse
-from src.scripts import train_alexnet_on_cifar10
+from src.scripts import image_classification_train_pipeline
 
 
 def parse_cmdline_param():
@@ -23,4 +23,4 @@ if __name__ == "__main__":
     model_name = args.nn
     dataset_name = args.dataset
     if model_name.lower() == "alexnet" and dataset_name.lower() == "cifar10":
-        train_alexnet_on_cifar10(args=args)
+        image_classification_train_pipeline(args=args)

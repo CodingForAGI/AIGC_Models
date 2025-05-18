@@ -1,1 +1,1 @@
-from .train_image_classifier import train_alexnet_on_cifar10
+from .train_image_classifier import image_classification_train_pipeline
