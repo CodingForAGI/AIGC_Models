@@ -46,7 +46,7 @@ class AlexNetCfg(BaseCfg):
         self.lr = 0.001
 
         # dataset
-        self.dataset_name = "cifar10"
+        self.dataset = "cifar10"
 
         # save model
         self.save_interval = 10
@@ -62,6 +62,6 @@ class ResNetCfg(BaseCfg):
         self.scale = "50"
         self.optimizer = "adam"
         
-        self.dataset_name = "cifar10"
+        self.dataset = "cifar10"
 
         self.save_interval = 10

@@ -170,9 +170,6 @@ def train(
 
 def evaluate(test_loader: DataLoader, model: nn.Module, metric: Metric, device: torch.device):
     model.eval()
-    test_loss = MeanAccumulator()
-    test_loss.reset()
-    test_avg_loss = 0
     metric.reset()
     num_test_batches = len(test_loader)
     test_batch_iter = tqdm(
@@ -189,7 +186,6 @@ def evaluate(test_loader: DataLoader, model: nn.Module, metric: Metric, device: 
 
             test_outputs = model(test_inputs)
 
-            test_avg_loss = test_loss.mean()
             metric.update(test_outputs, test_labels)
             metric.compute()
 
@@ -200,4 +196,4 @@ def evaluate(test_loader: DataLoader, model: nn.Module, metric: Metric, device: 
                 }
             )
     test_batch_iter.close()
-    print(f"[EVALUATE] iter: {i + 1} / {num_test_batches}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}")
+    print(f"[EVALUATE] iter: {i + 1} / {num_test_batches}, {metric.to_string()}")
