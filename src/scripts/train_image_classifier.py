@@ -1,11 +1,12 @@
 import torch
 import os
+import torchvision.models as models
 
 from experiments.base_cfg import AlexNetCfg, ResNetCfg
 from src.data import create_image_classification_dataloader
 from src.metric import ImageClassificationMetric
 from src.models.cnn_models import AlexNet
-from src.models.cnn_models.resnet import get_resnet
+from src.models.cnn_models.resnet import BasicBlock, ResNet, get_resnet
 from src.trainer import evaluate, train
 from src.utils import get_device, PROJECT_CFG, load_weights_from_training_status
 
@@ -17,6 +18,7 @@ def create_image_classification_model(model_name, cmdline_cfg):
         complete_model_name = "alexnet"
     elif model_name.lower() == "resnet":
         cfg = ResNetCfg().__call__(cmdline_cfg=cmdline_cfg)
+        model = ResNet(BasicBlock, [2, 2, 2, 2], 10)
         model, complete_model_name = get_resnet(scale=cfg.scale, num_classes=cfg.num_classes)
         print(model)
     else:
