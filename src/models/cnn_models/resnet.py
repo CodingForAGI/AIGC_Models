@@ -140,21 +140,16 @@ class ResNet(nn.Module):
         return x
 
 
-def resnet18(num_classes=1000):
-    return ResNet(BasicBlock, [2, 2, 2, 2], num_classes)
-
-
-def resnet34(num_classes=1000):
-    return ResNet(BasicBlock, [3, 4, 6, 3], num_classes)
-
-
-def resnet50(num_classes=1000):
-    return ResNet(Bottleneck, [3, 4, 6, 3], num_classes)
-
-
-def resnet101(num_classes=1000):
-    return ResNet(Bottleneck, [3, 4, 23, 3], num_classes)
-
-
-def resnet152(num_classes=1000):
-    return ResNet(Bottleneck, [3, 8, 36, 3], num_classes)    
+def get_resnet(scale="50", num_classes=1000):
+    if scale == "18":
+        return ResNet(BasicBlock, [2, 2, 2, 2], num_classes), "resnet18"
+    elif scale == "34":
+        return ResNet(BasicBlock, [3, 4, 6, 3], num_classes), "resnet34"
+    elif scale == "50":
+        return ResNet(Bottleneck, [3, 4, 6, 3], num_classes), "resnet50"
+    elif scale == "101":
+        return ResNet(Bottleneck, [3, 4, 23, 3], num_classes), "resnet101"
+    elif scale == "152":
+        return ResNet(Bottleneck, [3, 8, 36, 3], num_classes), "resnet152"
+    else:
+        raise ValueError(f"Invalid ResNet scale: {scale}. Please choose from 18, 34, 50, 101, and 152.")

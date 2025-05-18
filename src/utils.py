@@ -84,6 +84,7 @@ def load_weights_from_training_status(model, weights_path, device=torch.device("
         print(f"weights_path: {weights_path}")
         checkpoint = torch.load(weights_path, map_location=device)
         model.load_state_dict(checkpoint["model_state_dict"])
+        del checkpoint
         print(f"Successfully load weights from {weights_path}.")
 
 
