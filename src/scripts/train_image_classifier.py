@@ -1,6 +1,4 @@
 import torch
-import os
-import torchvision.models as models
 
 from experiments.base_cfg import AlexNetCfg, ResNetCfg
 from src.data import create_image_classification_dataloader
