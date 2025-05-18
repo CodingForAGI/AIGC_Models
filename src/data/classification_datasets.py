@@ -57,9 +57,9 @@ def create_image_classification_dataloader(dataset_name, batch_size, is_train=Fa
         [Resize((224, 224)), ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))] 
     )
     if is_train:
-        dataset = DATSET_LOADER[dataset_name](transform)[0]
+        dataset = DATSET_LOADER[dataset_name.lower()](transform)[0]
     else:
-        dataset = DATSET_LOADER[dataset_name](transform)[1]
+        dataset = DATSET_LOADER[dataset_name.lower()](transform)[1]
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=shuffle
     )
