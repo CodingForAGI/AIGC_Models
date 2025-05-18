@@ -15,6 +15,11 @@ CLEAN_RULES = [
         'description': '.log files'
     },
     {
+        'directory': './log',
+        'file_pattern': 'events.out.tfevents*',
+        'description': 'tensorboard log files'
+    },
+    {
         'directory': './output',
         'file_pattern': '*.pth',
         'description': '.pth files'

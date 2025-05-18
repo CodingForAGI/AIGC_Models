@@ -7,7 +7,8 @@ from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 
 from src.metric import Metric
-from src.utils import get_log_file_path, save_training_status
+from src.utils import PROJECT_CFG, get_log_file_path, save_training_status
+from torch.utils.tensorboard import SummaryWriter
 
 
 def get_logger(task_name):
@@ -57,6 +58,7 @@ def train(
 ):
     # logger configuration
     logger = get_logger(task_name=task_name)
+    writer = SummaryWriter(log_dir=PROJECT_CFG["log_root"])
 
     num_batches = len(train_loader)
     train_loss = MeanAccumulator()
@@ -102,6 +104,10 @@ def train(
                     **metric.to_string(key_value_fromat=True),  # Assuming to_string returns a dictionary
                 }
             )
+
+        writer.add_scalar("Train/Loss", avg_loss, epoch)
+        for k, v in metric.to_string(key_value_fromat=True).items():
+            writer.add_scalar(f"Train/{k}", v, epoch)
         logger.info(
             f"[TRAIN] Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_batches}, train_loss: {avg_loss:.6f}, {metric.to_string()}"
         )
@@ -140,10 +146,14 @@ def train(
                             **metric.to_string(key_value_fromat=True),  # Assuming to_string returns a dictionary
                         }
                     )
+
+
             test_batch_iter.close()
             logger.info(
                 f"[VALIDATE] Epoch: {epoch + 1} / {num_epochs}, iter: {i + 1} / {num_test_batches}, test_loss: {test_avg_loss:.6f}, {metric.to_string()}"
             )
+            for k, v in metric.to_string(key_value_fromat=True).items():
+                writer.add_scalar(f"Test/{k}", v, epoch)
 
         # save model every save_interval epochs
         if (epoch + 1) % save_interval == 0:
@@ -166,6 +176,9 @@ def train(
                 best_model_path = os.path.join(save_dir, "best_model.pth")
                 save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
                 print(f"Best model updated and saved to {best_model_path} when metric is {save_metric}")
+    
+
+    writer.close()
 
 
 def evaluate(test_loader: DataLoader, model: nn.Module, metric: Metric, device: torch.device):
