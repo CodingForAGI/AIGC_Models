@@ -6,7 +6,8 @@ from experiments.base_cfg import AlexNetCfg, ResNetCfg
 from src.data import create_image_classification_dataloader
 from src.metric import ImageClassificationMetric
 from src.models.cnn_models import AlexNet
-from src.models.cnn_models.resnet import BasicBlock, ResNet, get_resnet
+from src.models.cnn_models.resnet import get_resnet
+from src.optimizer import get_optimizer
 from src.trainer import evaluate, train
 from src.utils import get_device, PROJECT_CFG, load_weights_from_training_status
 
@@ -18,9 +19,7 @@ def create_image_classification_model(model_name, cmdline_cfg):
         complete_model_name = "alexnet"
     elif model_name.lower() == "resnet":
         cfg = ResNetCfg().__call__(cmdline_cfg=cmdline_cfg)
-        model = ResNet(BasicBlock, [2, 2, 2, 2], 10)
         model, complete_model_name = get_resnet(scale=cfg.scale, num_classes=cfg.num_classes)
-        print(model)
     else:
         raise ValueError(f"Invalid model name: {model_name}.")
     return model, cfg, complete_model_name
@@ -49,7 +48,7 @@ def image_classification_train_pipeline(args):
 
     if args.mode == "train":
         criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=cfg.lr, momentum=0.9)
+        optimizer = get_optimizer(optimizer_name=cfg.optimizer, params=model.parameters(), lr=cfg.lr)
         save_model_path = PROJECT_CFG["model_save_root"]
 
         train(

@@ -60,6 +60,7 @@ class ResNetCfg(BaseCfg):
         self.epochs = 100
         self.lr = 0.001
         self.scale = "50"
+        self.optimizer = "adam"
         
         self.dataset_name = "cifar10"
 
