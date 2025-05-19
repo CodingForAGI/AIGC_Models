@@ -61,6 +61,7 @@ def image_classification_train_pipeline(args):
             save_interval=cfg.save_interval,
             save_dir=save_model_path,
             save_by_metric_max_value=True,
+            resume_checkpoint=cfg.resume_ckpt,
             device=device,
         )
     elif args.mode == "eval":

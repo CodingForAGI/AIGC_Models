@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torch.optim import Optimizer
 
 from src.metric import Metric
-from src.utils import PROJECT_CFG, get_log_file_path, save_training_status
+from src.utils import PROJECT_CFG, get_log_file_path, relative_to_absolute_path, save_training_status
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -54,6 +54,7 @@ def train(
     save_interval: int,
     save_dir: str,
     save_by_metric_max_value: bool,
+    resume_checkpoint: str,
     device: torch.device,
 ):
     # logger configuration
@@ -67,11 +68,26 @@ def train(
         test_avg_loss = 0
 
     if save_by_metric_max_value:
-        save_metric = float("-inf")
+        save_metric = float("-inf")   # save_metric is the best metric value, initialize save_metric to negative infinity
     else:
-        save_metric = float("inf")
+        save_metric = float("inf")    # initialize save_metric to positive infinity
 
-    for epoch in range(num_epochs):
+    start_epoch = 0   # start from epoch 0 by default
+    if resume_checkpoint:
+        resume_checkpoint = relative_to_absolute_path(resume_checkpoint)
+        if os.path.isfile(resume_checkpoint):
+            logger.info(f"Loading checkpoint {resume_checkpoint}")
+            checkpoint = torch.load(resume_checkpoint, map_location=device)
+            start_epoch = checkpoint['epoch']
+            model.load_state_dict(checkpoint['model_state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            del checkpoint
+            logger.info(f"Checkpoint loaded. Resuming training from epoch {start_epoch}")
+        else:
+            logger.error(f"No checkpoint found at {resume_checkpoint}")
+            raise FileNotFoundError(f"No checkpoint found at {resume_checkpoint}")
+
+    for epoch in range(start_epoch, num_epochs):
         model.train()
         train_loss.reset()
         metric.reset()
@@ -158,7 +174,7 @@ def train(
         # save model every save_interval epochs
         if (epoch + 1) % save_interval == 0:
             checkpoint_path = os.path.join(save_dir, f"checkpoint_epoch_{epoch + 1}.pth")
-            save_training_status(epoch + 1, model, optimizer, avg_loss, checkpoint_path)
+            save_training_status(epoch + 1, model, optimizer, avg_loss, checkpoint_path, save_metric)
             print(f"Model saved to {checkpoint_path}")
 
         # save model with best metric value
@@ -167,14 +183,14 @@ def train(
             if metric.save_model_metric() > save_metric:
                 save_metric = metric.save_model_metric()
                 best_model_path = os.path.join(save_dir, "best_model.pth")
-                save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
+                save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path, save_metric)
                 print(f"Best model updated and saved to {best_model_path} when metric is {save_metric}")
         else:
             # when metric is lower, save the model
             if metric.save_model_metric() < save_metric:
                 save_metric = metric.save_model_metric()
                 best_model_path = os.path.join(save_dir, "best_model.pth")
-                save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path)
+                save_training_status(epoch + 1, model, optimizer, avg_loss, best_model_path, save_metric)
                 print(f"Best model updated and saved to {best_model_path} when metric is {save_metric}")
     
 

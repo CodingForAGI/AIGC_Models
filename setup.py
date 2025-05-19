@@ -15,6 +15,7 @@ def parse_cmdline_param():
     parser.add_argument("--lr", type=float, help="learning rate")
     parser.add_argument("--save_interval", type=int, help="save model interval")
     parser.add_argument("--num_classes", type=int, help="number of classes")
+    parser.add_argument("--resume_ckpt", type=str, help="path of resume checkpoint")
     parser.add_argument("--cfg", type=str, help="yaml config file name")
     args = parser.parse_args()
     return args

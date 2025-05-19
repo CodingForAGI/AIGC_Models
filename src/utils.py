@@ -79,7 +79,7 @@ def load_weights_from_training_status(model, weights_path, device=torch.device("
     repo_root = get_repo_root()
     if not weights_path:
         raise ValueError(f"`weights_path` must be provided, but got: {weights_path}")
-    weights_path = os.path.normpath(os.path.join(repo_root, weights_path))
+    weights_path = relative_to_absolute_path(weights_path)
     if os.path.exists(weights_path):
         print(f"weights_path: {weights_path}")
         checkpoint = torch.load(weights_path, map_location=device)
@@ -88,13 +88,21 @@ def load_weights_from_training_status(model, weights_path, device=torch.device("
         print(f"Successfully load weights from {weights_path}.")
 
 
-def save_training_status(epoch, model, optimizer, loss, checkpoint_path):
+def save_training_status(epoch, model, optimizer, loss, checkpoint_path, save_metric=None):
     torch.save(
         {
             "epoch": epoch,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "loss": loss,
+            "save_metric": save_metric,
         },
         checkpoint_path,
     )
+
+
+def relative_to_absolute_path(path):
+    if os.path.isabs(path):
+        return path
+    repo_root = get_repo_root()
+    return os.path.normpath(os.path.join(repo_root, path))
