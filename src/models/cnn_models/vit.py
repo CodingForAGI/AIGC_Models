@@ -337,3 +337,22 @@ def vit_large_patch16_224(num_classes=1000, **kwargs):
         **kwargs
     )
     return model
+
+
+def get_vit(scale="small", num_classes=1000):
+    """Get Vision Transformer model based on scale."""
+    if scale == "tiny":
+        model = vit_tiny_patch16_224(num_classes=num_classes)
+        complete_model_name = "vit_tiny_patch16_224"
+    elif scale == "small":
+        model = vit_small_patch16_224(num_classes=num_classes)
+        complete_model_name = "vit_small_patch16_224"
+    elif scale == "base":
+        model = vit_base_patch16_224(num_classes=num_classes)
+        complete_model_name = "vit_base_patch16_224"
+    elif scale == "large":
+        model = vit_large_patch16_224(num_classes=num_classes)
+        complete_model_name = "vit_large_patch16_224"
+    else:
+        raise ValueError(f"Invalid scale: {scale}.")
+    return model, complete_model_name

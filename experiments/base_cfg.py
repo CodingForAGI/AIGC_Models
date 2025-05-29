@@ -66,3 +66,19 @@ class ResNetCfg(BaseCfg):
 
         self.save_interval = 10
         self.resume_ckpt = None
+
+
+class ViTCfg(BaseCfg):
+    def __init__(self, cfg_name="vit_cfg"):
+        super().__init__(cfg_name)
+        self.num_classes = 10
+        self.batch_size = 128
+        self.epochs = 100
+        self.lr = 0.001
+        self.scale = "small"
+        self.optimizer = "adam"
+
+        self.dataset = "cifar10"
+
+        self.save_interval = 10
+        self.resume_ckpt = None

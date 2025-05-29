@@ -1,10 +1,11 @@
 import torch
 
-from experiments.base_cfg import AlexNetCfg, ResNetCfg
+from experiments.base_cfg import AlexNetCfg, ResNetCfg, ViTCfg
 from src.data import create_image_classification_dataloader
 from src.metric import ImageClassificationMetric
 from src.models.cnn_models import AlexNet
 from src.models.cnn_models.resnet import get_resnet
+from src.models.cnn_models.vit import get_vit
 from src.optimizer import get_optimizer
 from src.trainer import evaluate, train
 from src.utils import get_device, PROJECT_CFG, load_weights_from_training_status
@@ -18,6 +19,9 @@ def create_image_classification_model(model_name, cmdline_cfg):
     elif model_name.lower() == "resnet":
         cfg = ResNetCfg().__call__(cmdline_cfg=cmdline_cfg)
         model, complete_model_name = get_resnet(scale=cfg.scale, num_classes=cfg.num_classes)
+    elif model_name.lower() == "vit":
+        cfg = ViTCfg().__call__(cmdline_cfg=cmdline_cfg)
+        model, complete_model_name = get_vit(scale=cfg.scale, num_classes=cfg.num_classes)
     else:
         raise ValueError(f"Invalid model name: {model_name}.")
     return model, cfg, complete_model_name
