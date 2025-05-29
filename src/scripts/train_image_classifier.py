@@ -3,9 +3,9 @@ import torch
 from experiments.base_cfg import AlexNetCfg, ResNetCfg, ViTCfg
 from src.data import create_image_classification_dataloader
 from src.metric import ImageClassificationMetric
-from src.models.cnn_models import AlexNet
-from src.models.cnn_models.resnet import get_resnet
-from src.models.cnn_models.vit import get_vit
+from src.models.basic_models import AlexNet
+from src.models.basic_models.resnet import get_resnet
+from src.models.basic_models.vit import get_vit
 from src.optimizer import get_optimizer
 from src.trainer import evaluate, train
 from src.utils import get_device, PROJECT_CFG, load_weights_from_training_status
