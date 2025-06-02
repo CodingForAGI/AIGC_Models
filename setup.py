@@ -1,5 +1,5 @@
 import argparse
-from src.scripts import image_classification_train_pipeline
+from src.pipelines import image_classification_train_pipeline
 
 
 def parse_cmdline_param():
